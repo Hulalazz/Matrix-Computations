@@ -1,12 +1,16 @@
-function y = gaxpy(A, x, y, rowForm)
+function y = gaxpy(A, x, y, version)
 %% --------------- Interface ---------------
 %   Input
 %       A : matrix, size = (m, n)
 %       x : vector, size = (1, n) or (n, 1)
 %       y : vector, size = (1, n) or (n, 1)
-%       rowForm : logical
-%               Specify the gaxpy form, if rowForm = true, row form gaxpy
-%               will be used, or column form will be used.
+%       version : int
+%               Specify the version of gaxpy. VERSION may be one of the 
+%               following int:
+%                   1 : algorithm 1.1.3
+%                   2 : algorithm 1.1.4
+%                   3 : algorithm 1.1.3 row partition
+%                   4 : algorithm 1.1.4 column partition
 %   Output
 %       y = A \mathbf{x} + \mathbf{y}.
 %   Example
@@ -21,18 +25,28 @@ function y = gaxpy(A, x, y, rowForm)
 %       Weizhe Chen : cosmo_chan@126.com
 %% -----------------------------------------
     [m, n] = size(A);
-    if rowForm % row form
+    if version == 1 % algorithm 1.1.3
         for i = 1 : m
             for j = 1 : n
                 y(i) = A(i, j) * x(j) + y(i);
             end
         end
-    else % column form
+    elseif version == 2 % algorithm 1.1.4
         for j = 1 : n
-            for j = 1 : m
+            for i = 1 : m
                 y(i) = A(i, j) * x(j) + y(i);
             end
         end
+    elseif version == 3 % algorithm 1.1.3 row partition
+        for i = 1 : m
+            y(i) = dot(A(i, :), x) + y(i);
+        end
+    elseif version == 4 % algorithm 1.1.4 column partition
+        for j = 1 : n
+            y = x(j) * A(:, j) + y;
+        end
+    else
+        warning('VERSION must be 1, 2, 3 or 4, not %f', version);
     end
     
 end
