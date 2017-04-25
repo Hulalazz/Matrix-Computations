@@ -7,18 +7,18 @@ function A = outerProductUpdate(A, x, y, version)
 %       version : int
 %               Specify the version of outerProductUpdate. 
 %               VERSION may be one of the following int:
-%                   1 : level 1(scalar multiplication)
-%                   2 : level 2(row version saxpy)
-%                   3 : lebel 2(column version saxpy)
+%                   1 : scalar multiplication
+%                   2 : row version saxpy
+%                   3 : column version saxpy
 %   Output
 %       y = A + \mathbf{x} \mathbf{y}^\top.
 %   Example
 %       >> A = [1 2;3 4;5 6];
 %       >> x = [1; 2; 3]; 
 %       >> y = [4, 5]; 
-%       >> A1 = outerProductUpdate(A, x, y, 1)
-%       >> A2 = outerProductUpdate(A, x, y, 2)
-%       >> A3 = outerProductUpdate(A, x, y, 3)
+%       >> tic; A1 = outerProductUpdate(A, x, y, 1); toc; % 0.003257 sec.
+%       >> tic; A2 = outerProductUpdate(A, x, y, 2); toc; % 0.003907 sec.
+%       >> tic; A3 = outerProductUpdate(A, x, y, 3); toc; % 0.002816 sec.
 %   Reference
 %       1.1.9 Outer Product Update
 %       Golub G H, Van Loan C F. Matrix computations[M]. JHU Press, 2012.
@@ -31,6 +31,9 @@ function A = outerProductUpdate(A, x, y, version)
     end
     if size(x, 1) < size(x, 2)
         x = x';
+    end
+    if nargin  == 3
+        version = 3;
     end
 %% -----------------------------------------
     if version == 1
